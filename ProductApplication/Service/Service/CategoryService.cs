@@ -20,10 +20,37 @@ namespace ProductApplication.Service.Service
         }
          public async Task AddAsync(Category category)
         {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            await _context.Categories.AddAsync(category);
+             _context.SaveChanges();
         }
 
+        public  async Task<Category>GetByIdAsync(int id)
+        {
+            return await _context.Categories.FindAsync(id);
+        }
 
+        public async Task Update(Category model)
+        {
+            var category = await _context.Categories.FindAsync(model.Id);
+            if (category != null)
+            {
+                category.Name = model.Name;
+                category.IsActive = model.IsActive;
+                _context.Update(category);
+                _context.SaveChanges();
+
+            }
+        }
+
+        public async Task Delete(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+                _context.SaveChanges();
+            }
+
+        }
     }
 }

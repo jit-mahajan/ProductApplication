@@ -7,7 +7,7 @@
 <h3>@ViewData["Title"]</h3>
 <hr />
 <form>
-    <button asp-action="Create" asp-controller="Category" class="btn btn-primary mb-3">Create Category</button>
+    <button asp-action="CreateOrEdit" asp-controller="Category" class="btn btn-primary mb-3">Create Category</button>
     <table class="table table-responsive table-border table-hover">
         <thead>
             <tr class="table-active">
@@ -31,13 +31,22 @@
                         <td>@category.Id </td>
                         <td>@category.Name </td>
                         <td>@category.IsActive </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a asp-controller="Category" asp-action="CreateOrEdit" asp-route-id="@category.Id"
+                            class="btn btn-success">Edit</a>
+                             <a asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id"
+                            class="btn btn-danger">Delete</a>
+                            </div
+
+                        </td>
                     </tr>
                 }
             }
             else
             {
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <div>
                             No Categories Available
                         </div>

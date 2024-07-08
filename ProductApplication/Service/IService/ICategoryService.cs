@@ -8,6 +8,11 @@ namespace ProductApplication.Service.IService
   
        Task<IEnumerable<Category>> GetAllAsync();
 
+       Task<Category> GetByIdAsync(int id);
+
        Task AddAsync(Category category);
+
+        Task Update(Category model);
+        Task Delete(int id);
     }
 }
