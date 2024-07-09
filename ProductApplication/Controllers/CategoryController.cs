@@ -23,7 +23,7 @@ namespace ProductApplication.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CreateOrEdit(int id =  0)
+        public async Task<IActionResult> CreateOrEdit(int id)
         {
             if (id == 0)
             {
@@ -55,8 +55,7 @@ namespace ProductApplication.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
+
                     if (model.Id == 0)
                     {
                         await _iCategoryService.AddAsync(model);
@@ -68,12 +67,6 @@ namespace ProductApplication.Controllers
                         TempData["successMessage"] = "Category Detail updated successfully";
                     }
                     return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    TempData["error Message"] = "Model state is Invalid";
-                    return View();
-                }
             }
             catch (Exception ex)
             {

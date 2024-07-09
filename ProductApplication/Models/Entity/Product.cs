@@ -1,18 +1,25 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProductApplication.Models.Entity
 {
-    public class Category
+    public class Product
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         [MaxLength(50)]
-        [DisplayName("Category Name")]
+        [DisplayName("Product Name")]
         public string Name { get; set; }
+
         [Required]
-        public bool IsActive { get; set; } = true;
-        public ICollection<Product> Products { get; set; }
+        public double Price { get; set; }
+
+        public int CategoryId { get; set; }
+
+        [ForeignKey("CategoryId")]
+        public Category Category { get; set; }
     }
 }
