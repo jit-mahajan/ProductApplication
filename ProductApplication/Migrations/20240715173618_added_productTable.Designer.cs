@@ -11,7 +11,7 @@ using ProductApplication.Data;
 namespace ProductApplication.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240709071327_added_productTable")]
+    [Migration("20240715173618_added_productTable")]
     partial class added_productTable
     {
         /// <inheritdoc />
@@ -55,6 +55,9 @@ namespace ProductApplication.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

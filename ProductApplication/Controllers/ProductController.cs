@@ -77,7 +77,47 @@ namespace ProductApplication.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                Product product = await _iProductService.GetByIdAsync(id);
 
+                if (product != null)
+                {
+                    return View(product);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["error Message"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            TempData["error Message"] = $"Product Details not found with Id : {id}";
+            return RedirectToAction("Index");
+
+        }
+
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                await _iProductService.Delete(id);
+                TempData["successMessage"] = "Product deleted successfully";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["error Message"] = ex.Message;
+                return View();
+            }
+        }
+
+
+        [NonAction]
         private async Task LoadCategories()
         {
             var categories = await _iCategoryService.LoadCategoriesAsync();

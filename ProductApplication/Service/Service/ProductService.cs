@@ -45,5 +45,16 @@ namespace ProductApplication.Service.Service
             }
         }
 
+        public async Task Delete(int id)
+        {
+            var product = _context.Products
+                          .Include(p => p.Category) // Include the Category navigation property
+                          .FirstOrDefault(p => p.Id == id);
+            _context.Products.Remove(product);
+                _context.SaveChanges();
+           
+
+        }
+
     }
 }

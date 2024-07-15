@@ -10,6 +10,6 @@ namespace ProductApplication.Service.IService
         Task AddAsync(Product product);
 
         Task Update(Product product);
-       // Task Delete(int id);
+        Task Delete(int id);
     }
 }
