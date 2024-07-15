@@ -12,21 +12,38 @@ namespace ProductApplication.Service.Service
         {
             _context = context;
         }
-        public async Task<IEnumerable<Product>> GetAllAsync(int ? categoryId = null)
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            if (categoryId == null)
-            {
-                return await _context.Products.ToListAsync();
-            }
 
-            return await _context.Products
-                                  .Where(P => P.CategoryId == categoryId)
-                                  .ToListAsync();
+            var products =  _context.Products
+                                   .Include("Category");
+            return products;
         }
 
         public async Task<Product> GetByIdAsync(int id)
         {
             return await _context.Products.FindAsync(id);
         }
+
+        public async Task AddAsync(Product product)
+        {
+            await _context.Products.AddAsync(product);
+            _context.SaveChanges();
+        }
+
+        public async Task Update(Product model)
+        {
+            var product = await _context.Products.FindAsync(model.Id);
+            if (product != null)
+            {
+                product.Name = model.Name;
+                product.Price = model.Price;
+                product.Category.Name = model.Category.Name;
+                _context.Update(product);
+                _context.SaveChanges();
+
+            }
+        }
+
     }
 }

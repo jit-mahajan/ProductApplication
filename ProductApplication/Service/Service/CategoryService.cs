@@ -52,5 +52,14 @@ namespace ProductApplication.Service.Service
             }
 
         }
+
+
+        public async Task<IEnumerable<Category>> LoadCategoriesAsync()
+        {
+            return await _context.Categories.ToListAsync();
+
+        }
+
+    
     }
 }

@@ -12,7 +12,7 @@ namespace ProductApplication.Models.Entity
         [DisplayName("Category Name")]
         public string Name { get; set; }
         [Required]
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
         public ICollection<Product> Products { get; set; }
     }
 }

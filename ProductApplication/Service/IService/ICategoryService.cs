@@ -14,5 +14,7 @@ namespace ProductApplication.Service.IService
 
         Task Update(Category model);
         Task Delete(int id);
+
+        Task<IEnumerable<Category>> LoadCategoriesAsync();
     }
 }

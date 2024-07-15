@@ -17,6 +17,7 @@ namespace ProductApplication.Models.Entity
         [Required]
         public double Price { get; set; }
 
+        public bool IsActive { get; set; }
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
