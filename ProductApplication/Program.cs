@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using ProductApplication.APIController;
+using ProductApplication.APIController.APIServices;
 using ProductApplication.Data;
 using ProductApplication.Service.IService;
 using ProductApplication.Service.Service;
@@ -7,6 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var configuration = builder.Configuration;
+var useApi = configuration.GetValue<bool>("UseApi");
+builder.Services.Configure<ApiSetting>(options => options.UseApi = useApi);
+
+builder.Services.AddHttpClient<CategoryApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7247/"); // Replace with your actual API base URL
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ProductApp")));
