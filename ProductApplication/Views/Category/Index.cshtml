@@ -1,5 +1,4 @@
-﻿@model IEnumerable<ProductApplication.Models.Entity.Category>
-
+﻿@model ProductApplication.Models.Entity.PaginatedCategoryViewModel
 @{
     ViewData["Title"] = "Category List";
 }
@@ -12,20 +11,20 @@
         <thead>
             <tr class="table-active">
                 <th>
-                    @Html.DisplayNameFor(Model => Model.Id)
+                    @Html.DisplayNameFor(Model => Model.Categories.First().Id)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(Model => Model.Name)
+                    @Html.DisplayNameFor(Model => Model.Categories.First().Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(Model => Model.IsActive)
+                    @Html.DisplayNameFor(Model => Model.Categories.First().IsActive)
                 </th>
             </tr>
         </thead>
         <tbody>
-            @if (Model != null && Model.Any())
+            @if (Model != null && Model.Categories.Any())
             {
-                @foreach (var category in Model)
+                @foreach (var category in Model.Categories)
                 {
                     <tr>
                         <td>@category.Id </td>
@@ -56,3 +55,25 @@
         </tbody>
     </table>
 </form>
+<nav>
+    <ul class="pagination">
+        @if (Model.PageNumber > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">Previous</a>
+            </li>
+        }
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+            </li>
+        }
+        @if (Model.PageNumber < Model.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
+            </li>
+        }
+    </ul>
+</nav>

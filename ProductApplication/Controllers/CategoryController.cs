@@ -16,10 +16,19 @@ namespace ProductApplication.Controllers
             _iCategoryService = iCategoryService;
   
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
-            var category = await _iCategoryService.GetAllAsync();
-            return View(category);
+            var category = await _iCategoryService.GetAllAsync(pageNumber, pageSize);
+            int totalProducts = await _iCategoryService.TotalCategories();
+            var viewModel = new PaginatedCategoryViewModel
+            {
+                Categories = category,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalProducts = totalProducts
+            };
+
+            return View(viewModel);
         }
 
         [HttpGet]

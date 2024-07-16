@@ -12,11 +12,14 @@ namespace ProductApplication.Service.Service
         {
             _context = context;
         }
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<IEnumerable<Product>> GetAllAsync(int pageNumber, int pageSize)
         {
 
-            var products =  _context.Products
-                                   .Include("Category");
+            var products = await _context.Products
+                                  .Include(p => p.Category)
+                                  .Skip((pageNumber - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToListAsync();
             return products;
         }
 
@@ -38,7 +41,6 @@ namespace ProductApplication.Service.Service
             {
                 product.Name = model.Name;
                 product.Price = model.Price;
-                product.Category.Name = model.Category.Name;
                 _context.Update(product);
                 _context.SaveChanges();
 
@@ -47,13 +49,18 @@ namespace ProductApplication.Service.Service
 
         public async Task Delete(int id)
         {
-            var product = _context.Products
-                          .Include(p => p.Category) // Include the Category navigation property
-                          .FirstOrDefault(p => p.Id == id);
+            var product = await _context.Products
+                          .Include(p => p.Category)
+                          .FirstOrDefaultAsync(p => p.Id == id);
             _context.Products.Remove(product);
                 _context.SaveChanges();
            
 
+        }
+
+        public async Task<int> TotalProducts()
+        {
+            return  await _context.Products.CountAsync();
         }
 
     }

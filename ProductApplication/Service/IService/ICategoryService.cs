@@ -5,8 +5,8 @@ namespace ProductApplication.Service.IService
 {
     public interface ICategoryService
     {
-  
-       Task<IEnumerable<Category>> GetAllAsync();
+
+        Task<IEnumerable<Category>> GetAllAsync(int pageNumber, int pageSize);
 
        Task<Category> GetByIdAsync(int id);
 
@@ -16,5 +16,7 @@ namespace ProductApplication.Service.IService
         Task Delete(int id);
 
         Task<IEnumerable<Category>> LoadCategoriesAsync();
+
+        Task<int> TotalCategories();
     }
 }

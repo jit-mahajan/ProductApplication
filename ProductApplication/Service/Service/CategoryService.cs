@@ -14,9 +14,12 @@ namespace ProductApplication.Service.Service
             _context = context;
         }
 
-        public async Task<IEnumerable<Category>> GetAllAsync()
+        public async Task<IEnumerable<Category>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories
+                                 .Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize)
+                                 .ToListAsync();
         }
          public async Task AddAsync(Category category)
         {
@@ -31,14 +34,22 @@ namespace ProductApplication.Service.Service
 
         public async Task Update(Category model)
         {
-            var category = await _context.Categories.FindAsync(model.Id);
+            var category = await _context.Categories
+                                         .Include(c => c.Products)
+                                         .FirstOrDefaultAsync(c => c.Id == model.Id);
+
             if (category != null)
             {
                 category.Name = model.Name;
                 category.IsActive = model.IsActive;
-                _context.Update(category);
-                _context.SaveChanges();
 
+                foreach (var product in category.Products)
+                {
+                    product.IsActive = model.IsActive;
+                }
+
+                _context.Update(category);
+                await _context.SaveChangesAsync();
             }
         }
 
@@ -60,6 +71,11 @@ namespace ProductApplication.Service.Service
 
         }
 
-    
+        public async Task<int> TotalCategories()
+        {
+            return await _context.Categories.CountAsync();
+        }
+
+
     }
 }
