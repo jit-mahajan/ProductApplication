@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using ProductApplication.APIController;
 using ProductApplication.APIController.APIServices;
 using ProductApplication.Data;
-using ProductApplication.Filters;
 using ProductApplication.Service.IService;
 using ProductApplication.Service.Service;
 
@@ -26,7 +25,6 @@ builder.Services.AddHttpClient<CategoryApiService>(client =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ProductApp")));
 
-builder.Services.AddScoped<InitializeSettingsFilter>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAppSettingsService, AppSettingsService>();

@@ -32,6 +32,7 @@ namespace ProductApplication.Controllers
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
+            await InitializeSettingsAsync();
             IEnumerable<Category> categories;
             int totalCategories;
             if (_useApi)
@@ -57,9 +58,11 @@ namespace ProductApplication.Controllers
             return View(viewModel);
         }
 
+        /*
         [HttpGet]
         public async Task<IActionResult> CreateOrEdit(int id)
         {
+            await InitializeSettingsAsync();
             if (id == 0)
             {
                 return View(new Category());
@@ -96,6 +99,8 @@ namespace ProductApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrEdit(Category model)
         {
+
+            await InitializeSettingsAsync();
             try
             {
 
@@ -133,9 +138,104 @@ namespace ProductApplication.Controllers
             }
         }
 
+        */
+
+        [HttpGet]
+        public async Task<IActionResult> CreateCategory()
+        {
+            await InitializeSettingsAsync();
+            return View(new Category());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCategory(Category model)
+        {
+            try
+            {
+                await InitializeSettingsAsync();
+                  if (_useApi)
+                    {
+                        await _categoryApiService.CreateCategoryAsync(model);
+                    }
+                    else
+                    {
+                        await _iCategoryService.AddAsync(model);
+                    }
+                    TempData["successMessage"] = "Category created successfully";
+                    return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            await InitializeSettingsAsync();
+            if (id == 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                Category category;
+                if (_useApi)
+                {
+                    category = await _categoryApiService.GetCategoryByIdAsync(id);
+                }
+                else
+                {
+                    category = await _iCategoryService.GetByIdAsync(id);
+                }
+                if (category != null)
+                {
+                    return View(category);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+            }
+            TempData["errorMessage"] = $"Category details not found with Id {id}";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Category model)
+        {
+            try
+            {
+                await InitializeSettingsAsync();
+                if (ModelState.IsValid)
+                {
+                    if (_useApi)
+                    {
+                        await _categoryApiService.UpdateCategoryAsync(model);
+                    }
+                    else
+                    {
+                        await _iCategoryService.Update(model);
+                    }
+                    TempData["successMessage"] = "Category updated successfully";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+            }
+            return View("Index");
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
+            await InitializeSettingsAsync();
             try
             {
                 Category category;
@@ -167,6 +267,7 @@ namespace ProductApplication.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            await InitializeSettingsAsync();
             try
             {
                 if (_useApi)

@@ -72,7 +72,7 @@ namespace ProductApplication.API.APIController
             }
         }
 
-        /*
+        
 
         // PUT: api/CategoryApi/5
         [HttpPut("{id}")]
@@ -105,42 +105,7 @@ namespace ProductApplication.API.APIController
             }
         }
 
-        */
-        [HttpPost]
-        public async Task<IActionResult> CreateOrEdit([FromBody] Category model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                if (model.Id == 0)
-                {
-                    // Create new category
-                    await _iCategoryService.AddAsync(model);
-                    return Ok(new { Message = "Category created successfully", Category = model });
-                }
-                else
-                {
-                    // Update existing category
-                    var existingCategory = await _iCategoryService.GetByIdAsync(model.Id);
-                    if (existingCategory == null)
-                    {
-                        return NotFound($"Category with Id = {model.Id} not found");
-                    }
-
-                    await _iCategoryService.Update(model);
-                    return Ok(new { Message = "Category updated successfully", Category = model });
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
+        
         // DELETE: api/CategoryApi/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

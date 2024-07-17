@@ -1,60 +1,48 @@
 ﻿@model ProductApplication.Models.Entity.PaginatedCategoryViewModel
+
 @{
     ViewData["Title"] = "Category List";
 }
 
 <h3>@ViewData["Title"]</h3>
 <hr />
-<form>
-    <button asp-action="CreateOrEdit" asp-controller="Category" class="btn btn-primary mb-3">Create Category</button>
-    <table class="table table-responsive table-border table-hover">
-        <thead>
-            <tr class="table-active">
-                <th>
-                    @Html.DisplayNameFor(Model => Model.Categories.First().Id)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(Model => Model.Categories.First().Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(Model => Model.Categories.First().IsActive)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Categories.Any())
-            {
-                @foreach (var category in Model.Categories)
-                {
-                    <tr>
-                        <td>@category.Id </td>
-                        <td>@category.Name </td>
-                        <td>@category.IsActive </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a asp-controller="Category" asp-action="CreateOrEdit" asp-route-id="@category.Id"
-                            class="btn btn-success">Edit</a>
-                             <a asp-controller="Category" asp-action="Delete" asp-route-id="@category.Id"
-                            class="btn btn-danger">Delete</a>
-                            </div
-
-                        </td>
-                    </tr>
-                }
-            }
-            else
+<a asp-action="CreateCategory" class="btn btn-primary mb-3">Create Category</a>
+<table class="table table-responsive table-bordered table-hover">
+    <thead>
+        <tr class="table-active">
+            <th>@Html.DisplayNameFor(model => model.Categories.First().Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Categories.First().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Categories.First().IsActive)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Categories.Any())
+        {
+            @foreach (var category in Model.Categories)
             {
                 <tr>
-                    <td colspan="5">
-                        <div>
-                            No Categories Available
+                    <td>@category.Id</td>
+                    <td>@category.Name</td>
+                    <td>@category.IsActive</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-success">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger">Delete</a>
                         </div>
                     </td>
                 </tr>
             }
-        </tbody>
-    </table>
-</form>
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">No Categories Available</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 <nav>
     <ul class="pagination">
         @if (Model.PageNumber > 1)
