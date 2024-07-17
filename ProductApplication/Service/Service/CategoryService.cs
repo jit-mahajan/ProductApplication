@@ -68,9 +68,7 @@ namespace ProductApplication.Service.Service
         public async Task<IEnumerable<Category>> LoadCategoriesAsync()
         {
             return await _context.Categories.ToListAsync();
-
         }
-
         public async Task<int> TotalCategories()
         {
             return await _context.Categories.CountAsync();

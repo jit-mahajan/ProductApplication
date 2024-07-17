@@ -5,6 +5,7 @@ using ProductApplication.Service.IService;
 
 namespace ProductApplication.API.APIController
 {
+    [Route("api/[controller]")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _iCategoryService;
@@ -31,7 +32,7 @@ namespace ProductApplication.API.APIController
         }
 
       
-
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -63,13 +64,15 @@ namespace ProductApplication.API.APIController
             try
             {
                 await _iCategoryService.AddAsync(model);
-                return CreatedAtAction(nameof(GetById), new { id = model.Id }, model);
+                return Ok(model);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
         }
+
+        /*
 
         // PUT: api/CategoryApi/5
         [HttpPut("{id}")]
@@ -95,6 +98,42 @@ namespace ProductApplication.API.APIController
 
                 await _iCategoryService.Update(model);
                 return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        */
+        [HttpPost]
+        public async Task<IActionResult> CreateOrEdit([FromBody] Category model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                if (model.Id == 0)
+                {
+                    // Create new category
+                    await _iCategoryService.AddAsync(model);
+                    return Ok(new { Message = "Category created successfully", Category = model });
+                }
+                else
+                {
+                    // Update existing category
+                    var existingCategory = await _iCategoryService.GetByIdAsync(model.Id);
+                    if (existingCategory == null)
+                    {
+                        return NotFound($"Category with Id = {model.Id} not found");
+                    }
+
+                    await _iCategoryService.Update(model);
+                    return Ok(new { Message = "Category updated successfully", Category = model });
+                }
             }
             catch (Exception ex)
             {

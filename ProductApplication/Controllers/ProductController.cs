@@ -10,11 +10,19 @@ namespace ProductApplication.Controllers
     {
         private readonly IProductService _iProductService; 
         private readonly ICategoryService _iCategoryService;
-        public ProductController(IProductService iProductService, ICategoryService iCategoryService)
+        private readonly IAppSettingsService _appSettingsService;
+        private bool _useApi;
+        public ProductController(IProductService iProductService, ICategoryService iCategoryService, IAppSettingsService appSettingsService)
         {
             _iProductService = iProductService;
             _iCategoryService = iCategoryService;
+            _appSettingsService = appSettingsService;
         }
+        private async Task InitializeSettingsAsync()
+        {
+            _useApi = await _appSettingsService.GetUseApiFlagAsync();
+        }
+
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {

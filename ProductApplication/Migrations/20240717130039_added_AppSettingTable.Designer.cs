@@ -11,8 +11,8 @@ using ProductApplication.Data;
 namespace ProductApplication.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240715173618_added_productTable")]
-    partial class added_productTable
+    [Migration("20240717130039_added_AppSettingTable")]
+    partial class added_AppSettingTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,22 @@ namespace ProductApplication.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ProductApplication.Models.Entity.AppSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("UseApi")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppSettings");
+                });
 
             modelBuilder.Entity("ProductApplication.Models.Entity.Category", b =>
                 {

@@ -13,6 +13,6 @@ namespace ProductApplication.Data
 
         public DbSet<Product> Products { get; set; }
 
-
+        public DbSet<AppSetting> AppSettings { get; set; }
     }
 }

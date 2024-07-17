@@ -2,6 +2,6 @@
 {
     public class ApiSetting
     {
-        public bool UseApi { get; set; }
+        public bool useApi { get; set; }
     }
 }

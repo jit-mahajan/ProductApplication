@@ -5,6 +5,8 @@ using ProductApplication.Models.Entity;
 using ProductApplication.Service;
 using ProductApplication.Service.IService;
 using System.Linq.Expressions;
+using ProductApplication.API;
+using ProductApplication.APIController;
 
 namespace ProductApplication.Controllers
 {
@@ -12,15 +14,21 @@ namespace ProductApplication.Controllers
     {
         private readonly ICategoryService _iCategoryService;
         private readonly CategoryApiService _categoryApiService;
-        private readonly bool _useApi;
+        private readonly IAppSettingsService _appSettingsService;
+        private  bool _useApi;
 
-        public CategoryController(ICategoryService iCategoryService, CategoryApiService categoryApiService, bool useApi)
+        public CategoryController(ICategoryService iCategoryService, CategoryApiService categoryApiService, IAppSettingsService appSettingsService)
         {
             _iCategoryService = iCategoryService;
             _categoryApiService = categoryApiService;
-            _useApi = useApi;
+            _appSettingsService = appSettingsService;
+
         }
 
+        private async Task InitializeSettingsAsync()
+        {
+            _useApi = await _appSettingsService.GetUseApiFlagAsync();
+        }
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {

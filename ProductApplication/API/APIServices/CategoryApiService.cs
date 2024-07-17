@@ -26,6 +26,7 @@ namespace ProductApplication.APIController.APIServices
             return await response.Content.ReadFromJsonAsync<Category>();
         }
 
+
         public async Task CreateCategoryAsync(Category category)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/category", category);
@@ -49,6 +50,9 @@ namespace ProductApplication.APIController.APIServices
     {
         public IEnumerable<T> Categories { get; set; }
         public int TotalCategories { get; set; }
+
+        public IEnumerable<T> Products { get; set; }
+        public int TotalProducts { get; set; }
     }
 
 }

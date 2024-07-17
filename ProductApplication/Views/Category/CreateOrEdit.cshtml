@@ -4,7 +4,7 @@
     ViewData["Title"] = Model != null && Model.Id == 0 ? "Create Category" : "Edit Category";
 }
 
-<form method="post" action="CreateOrEdit">
+<form method="post" asp-action="CreateOrEdit">
     <div class="card">
         <div class="card-header bg-info">
             <h2 class="text-center">@ViewData["Title"]</h2>
