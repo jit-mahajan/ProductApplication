@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProductApplication.API.APIServices;
 using ProductApplication.Models.Entity;
 using ProductApplication.Service.IService;
 using ProductApplication.Service.Service;
@@ -11,12 +12,14 @@ namespace ProductApplication.Controllers
         private readonly IProductService _iProductService; 
         private readonly ICategoryService _iCategoryService;
         private readonly IAppSettingsService _appSettingsService;
+        private readonly ProductApiService _productApiService;
         private bool _useApi;
-        public ProductController(IProductService iProductService, ICategoryService iCategoryService, IAppSettingsService appSettingsService)
+        public ProductController(IProductService iProductService, ICategoryService iCategoryService, IAppSettingsService appSettingsService, ProductApiService productApiService)
         {
             _iProductService = iProductService;
             _iCategoryService = iCategoryService;
             _appSettingsService = appSettingsService;
+            _productApiService = productApiService;
         }
         private async Task InitializeSettingsAsync()
         {
@@ -26,8 +29,23 @@ namespace ProductApplication.Controllers
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10)
         {
-            var products = await _iProductService.GetAllAsync(pageNumber, pageSize);
-            int totalProducts = await _iProductService.TotalProducts();
+            await InitializeSettingsAsync();
+
+            IEnumerable<Product> products;
+            int totalProducts;
+
+            if (_useApi)
+            {
+                var response = await _productApiService.GetProductsAsync(pageNumber, pageSize);
+                products = response;
+                totalProducts = products.Count();
+            }
+            else
+            {
+                products = await _iProductService.GetAllAsync(pageNumber, pageSize);
+                totalProducts = await _iProductService.TotalProducts();
+            }
+
             var viewModel = new PaginatedProductViewModel
             {
                 Products = products,
@@ -40,66 +58,118 @@ namespace ProductApplication.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> CreateOrEdit(int id)
+        public async Task<IActionResult> Create()
         {
-
+            await InitializeSettingsAsync();
             await LoadCategories();
-            if (id == 0)
-            {
-                return View(new Product());
-            }
-            else
-            {
-                try
-                {
-                    Product product = await _iProductService.GetByIdAsync(id);       
-                    if (product != null)
-                    {
-                        return View(product);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TempData["errorMessage"] = ex.Message;
-                    return RedirectToAction("Index");
-                }
-            }
-            TempData["errorMessage"] = $"Product details not found with Id {id}";
-            return RedirectToAction("Index");
-
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrEdit(Product model)
+        public async Task<IActionResult> Create(Product model)
         {
+            await InitializeSettingsAsync();
             try
             {
-
-                if (model.Id == 0)
+                await LoadCategories();
+                if (_useApi)
                 {
-                    await _iProductService.AddAsync(model);
-                    TempData["successMessage"] = "Product Added  successfully";
+                    await _productApiService.CreateProductAsync(model);
                 }
                 else
                 {
-                    await _iProductService.Update(model);
-                    TempData["successMessage"] = "Product Detail updated successfully";
+                    await _iProductService.AddAsync(model);
                 }
+                TempData["successMessage"] = "Product created successfully";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 TempData["errorMessage"] = ex.Message;
-                return View();
             }
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            await InitializeSettingsAsync();
+            await LoadCategories();
+            if (id == 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                Product product;
+                if (_useApi)
+                {
+                    product = await _productApiService.GetProductByIdAsync(id);
+                }
+                else
+                {
+                    product = await _iProductService.GetByIdAsync(id);
+                }
+                if (product != null)
+                {
+                    return View(product);
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+            }
+            TempData["errorMessage"] = $"Product details not found with Id {id}";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, Product model)
+        {
+            await InitializeSettingsAsync();
+            if (id != model.Id)
+            {
+                TempData["errorMessage"] = "Invalid product ID";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                await LoadCategories();
+                if (_useApi)
+                {
+                    await _productApiService.UpdateProductAsync(model);
+                }
+                else
+                {
+                    await _iProductService.Update(model);
+                }
+                TempData["successMessage"] = "Product updated successfully";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+            }
+            return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
+            await InitializeSettingsAsync();
             try
             {
-                Product product = await _iProductService.GetByIdAsync(id);
+                Product product;
+                if (_useApi)
+                {
+                    product = await _productApiService.GetProductByIdAsync(id);
+                }
+                else
+                {
+                    product = await _iProductService.GetByIdAsync(id);
+                }
 
                 if (product != null)
                 {
@@ -108,31 +178,36 @@ namespace ProductApplication.Controllers
             }
             catch (Exception ex)
             {
-                TempData["error Message"] = ex.Message;
-                return RedirectToAction("Index");
+                TempData["errorMessage"] = ex.Message;
+                return RedirectToAction(nameof(Index));
             }
-            TempData["error Message"] = $"Product Details not found with Id : {id}";
-            return RedirectToAction("Index");
-
+            TempData["errorMessage"] = $"Product details not found with Id {id}";
+            return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            await InitializeSettingsAsync();
             try
             {
-                await _iProductService.Delete(id);
+                if (_useApi)
+                {
+                    await _productApiService.DeleteProductAsync(id);
+                }
+                else
+                {
+                    await _iProductService.Delete(id);
+                }
                 TempData["successMessage"] = "Product deleted successfully";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                TempData["error Message"] = ex.Message;
+                TempData["errorMessage"] = ex.Message;
                 return View();
             }
         }
-
 
         [NonAction]
         private async Task LoadCategories()

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using ProductApplication.API.APIServices;
 using ProductApplication.APIController;
 using ProductApplication.APIController.APIServices;
 using ProductApplication.Data;
@@ -17,10 +18,6 @@ var configuration = builder.Configuration;
 builder.Services.Configure<ApiSetting>(configuration);
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<ApiSetting>>().Value);
 
-builder.Services.AddHttpClient<CategoryApiService>(client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7247/"); // Replace with your actual API base URL
-});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ProductApp")));
@@ -28,6 +25,16 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("ProductApp")));
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAppSettingsService, AppSettingsService>();
+
+builder.Services.AddHttpClient<CategoryApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7247/"); // Replace with your actual API base URL
+});
+
+builder.Services.AddHttpClient<ProductApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7247/"); // Replace with your actual API base URL
+});
 
 var app = builder.Build();
 

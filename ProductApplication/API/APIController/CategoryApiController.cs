@@ -56,11 +56,6 @@ namespace ProductApplication.API.APIController
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Category model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
                 await _iCategoryService.AddAsync(model);

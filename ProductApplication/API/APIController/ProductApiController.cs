@@ -6,12 +6,12 @@ using ProductApplication.Service.IService;
 namespace ProductApplication.API.APIController
 {
     [Route("api/[controller]")]
-    public class ProductApiController : ControllerBase
+    public class ProductController : ControllerBase
     {
 
         private readonly IProductService _iProductService;
 
-        public ProductApiController(IProductService iProductService)
+        public ProductController(IProductService iProductService)
         {
             _iProductService = iProductService;
         }

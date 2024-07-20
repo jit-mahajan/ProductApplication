@@ -144,7 +144,7 @@ namespace ProductApplication.Controllers
         public async Task<IActionResult> CreateCategory()
         {
             await InitializeSettingsAsync();
-            return View(new Category());
+            return View();
         }
 
         [HttpPost]
