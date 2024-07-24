@@ -41,11 +41,11 @@
                         <th>@product.IsActive</th>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a asp-controller="Product" asp-action="CreateOrEdit" asp-route-id="@product.Id"
+                                <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id"
                             class="btn btn-success">Edit</a>
                              <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id"
                             class="btn btn-danger">Delete</a>
-                            </div
+                            </div>
 
                         </td>
                     </tr>

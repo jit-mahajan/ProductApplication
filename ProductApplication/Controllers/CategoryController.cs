@@ -210,8 +210,7 @@ namespace ProductApplication.Controllers
             try
             {
                 await InitializeSettingsAsync();
-                if (ModelState.IsValid)
-                {
+
                     if (_useApi)
                     {
                         await _categoryApiService.UpdateCategoryAsync(model);
@@ -222,7 +221,7 @@ namespace ProductApplication.Controllers
                     }
                     TempData["successMessage"] = "Category updated successfully";
                     return RedirectToAction(nameof(Index));
-                }
+                
             }
             catch (Exception ex)
             {

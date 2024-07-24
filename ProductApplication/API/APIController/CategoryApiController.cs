@@ -73,18 +73,14 @@ namespace ProductApplication.API.APIController
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Category model)
         {
-            if (id != model.Id)
-            {
-                return BadRequest("Category ID mismatch");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             try
             {
+
+                if (id != model.Id)
+                {
+                    return BadRequest("Category ID mismatch");
+                }
                 var existingCategory = await _iCategoryService.GetByIdAsync(id);
                 if (existingCategory == null)
                 {
